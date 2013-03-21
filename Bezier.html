@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<head>
+    <style type="text/css">
+        .wraper {
+            position: relative;
+            border: 1px solid orange;
+        }
+    </style>
+    <script type="text/javascript">
+        function draw() {
+            var can = document.getElementById('test');
+            if (can.getContext) {
+                var cxt = can.getContext('2d');
+
+                //绘制起始点、控制点、终点
+                cxt.beginPath();
+                cxt.moveTo(20, 170);
+                cxt.lineTo(130, 40);
+                cxt.lineTo(180, 150);
+                cxt.stroke();
+
+                cxt.strokeStyle = "rgba(255,0,0,1)";
+
+                //绘制2次贝塞尔曲线
+                cxt.beginPath();
+                cxt.moveTo(20, 170);
+                cxt.quadraticCurveTo(130, 40, 180, 150);
+                cxt.stroke();
+
+            }
+
+
+            var ctx = document.getElementById('test2').getContext('2d');
+
+//            ctx.setTransform(1, 0, 0, -1, 0, 500); //将canvas坐标变换为熟悉的直角坐标系
+//            bezier(50, 50, 0, 100, 200, 100, 300, 0, 500, 100); //直接传点的x y就行了
+
+            bezier(20, 170, 130, 40, 180, 150);
+
+            function bezier() {
+                var n = arguments.length / 2;
+                var trangle = pascal(n);
+                var map = [];
+                //第一个循环控制100个点
+                for (var t = 0; t <= 100; t++) {
+                    map[2 * t] = 0;
+                    map[2 * t + 1] = 0;
+                    //第二个循环来对函数的每一项做加操作
+                    for (var i = 0; i < n; i++) {
+                        map[2 * t] += trangle[i + 1] * arguments[2 * i] * Math.pow(1 - t / 100, n - i - 1) * Math.pow(t / 100, i);    //save X
+                        map[2 * t + 1] += trangle[i + 1] * arguments[2 * i + 1] * Math.pow(1 - t / 100, n - i - 1) * Math.pow(t / 100, i);  //save Y
+                    }
+                }
+                //开始绘画
+                ctx.beginPath();
+
+                var i = 0;
+                var drawobj = setInterval(drawbz, 5);
+
+                function drawbz() {
+                    ctx.lineTo(map[2 * i], map[2 * i + 1]);
+                    i++;
+                    if (i == 101) {
+                        clearInterval(drawobj);
+                    }
+                    ctx.stroke();
+                }
+
+//                for (var i = 0; i < 101; i++) {
+//                    ctx.lineTo(map[2 * i], map[2 * i + 1])
+//                }
+
+            }
+
+            //杨辉三角 获得每个项的常数参数
+            function pascal(n) {
+                var trangle = [];
+                numerator = factorial(n - 1);
+                for (var k = 1; k < n + 1; k++) {
+                    trangle[k] = numerator / factorial(k - 1) / factorial(n - k);
+                }
+                return trangle;
+            }
+
+            function factorial(n) {
+                var result = 1;
+                for (var k = 1; k < n + 1; k++) {
+                    result *= k;
+                }
+                return result;
+            }
+
+
+            var ctx2 = document.getElementById('test3').getContext('2d');
+            var ctx3 = document.getElementById('test3').getContext('2d');
+
+
+            bezier2(20, 170, 50, 100, 130, 40, 180, 150);
+            function bezier2() {
+                var lines = [];
+
+                var linesNumber = arguments.length / 2 - 1;
+
+                //最初的n-1条曲线
+                ctx2.beginPath();
+
+                for (var i = 0; i < arguments.length / 2; i++) {
+                    ctx2.lineTo(arguments[i * 2], arguments[i * 2 + 1]);
+                    ctx2.strokeStyle = "rgba(255,0,0,1)";
+                    ctx2.stroke();
+                }
+
+
+                for (var i = 0; i < linesNumber; i++) {
+                    lines[i] = [];
+                    for (var j = 0; j < 101; j++) {
+                        lines[i][j * 2] = (arguments[i * 2 + 2] - arguments[i * 2]) / 100 * j + arguments[i * 2];    //save X
+                        lines[i][j * 2 + 1] = (arguments[i * 2 + 3] - arguments[i * 2 + 1]) / 100 * j + arguments[i * 2 + 1] //save Y
+                    }
+                }
+
+
+                //循环得到最终曲线的点，保存在lines[0]中
+
+
+//                while (--linesNumber) {
+//                    for (var i = 0; i < linesNumber; i++) {
+//                        for (var j = 0; j < 101; j++) {
+//                            lines[i][j * 2] = (lines[i + 1][j * 2] - lines[i][j * 2]) / 100 * j + lines[i][j * 2];
+//                            lines[i][j * 2 + 1] = (lines[i + 1][j * 2 + 1] - lines[i][j * 2 + 1]) / 100 * j + lines[i][j * 2 + 1];
+//                        }
+//                    }
+//                }
+
+                ctx2.beginPath();
+                ctx2.strokeStyle="rgba(255,174,240,1)";
+
+
+                function sleep(d) {
+                    for (var t = Date.now(); Date.now() - t <= d;);
+                }
+
+//                var drawpath = setInterval(drawpathf, 5);
+//
+//
+//                function drawpathf(){
+//                    lines[i][j * 2] = (lines[i + 1][j * 2] - lines[i][j * 2]) / 100 * j + lines[i][j * 2];
+//                    lines[i][j * 2 + 1] = (lines[i + 1][j * 2 + 1] - lines[i][j * 2 + 1]) / 100 * j + lines[i][j * 2 + 1];
+//                    ctx2.lineTo(lines[i][j * 2], lines[i][j * 2 + 1]);
+//                    ctx2.stroke();
+//                }
+
+
+                for (var j = 0; j < 101; j++) {
+                    var line = linesNumber;
+                    while (--line) {
+                        for (var i = 0; i < line; i++) {
+                            lines[i][j * 2] = (lines[i + 1][j * 2] - lines[i][j * 2]) / 100 * j + lines[i][j * 2];
+                            lines[i][j * 2 + 1] = (lines[i + 1][j * 2 + 1] - lines[i][j * 2 + 1]) / 100 * j + lines[i][j * 2 + 1];
+                            ctx2.lineTo(lines[i][j * 2], lines[i][j * 2 + 1]);
+                            ctx2.stroke();
+                        }
+                    }
+                }
+
+                //绘制曲线
+                ctx2.beginPath();
+                ctx2.strokeStyle = "rgba(255,0,240,1)";
+                var j = 0;
+                var drawobj2 = setInterval(drawbz2, 5);
+
+                function drawbz2() {
+                    var x = lines[0][j * 2];
+                    var y = lines[0][j * 2 + 1];
+                    ctx2.lineTo(x, y);
+                    j++;
+                    if (j == 101) {
+                        clearInterval(drawobj2);
+                    }
+                    ctx2.stroke();
+                }
+
+            }
+
+        }
+    </script>
+</head>
+
+<body onload="draw();">
+
+<canvas id="test" width="200px" height="200px" class="wraper"></canvas>
+
+
+<canvas id="test2" width="200px" height="200px" class="wraper"></canvas>
+
+
+<canvas id="test3" width="200px" height="200px" class="wraper"></canvas>
+</body>
+</html>
