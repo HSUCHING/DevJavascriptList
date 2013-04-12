@@ -151,14 +151,27 @@
 //                }
 
 
+
+
+                function aa(i,j){
+                    return function(){
+                        ctx2.lineTo(lines[i][j * 2], lines[i][j * 2 + 1]);
+                        ctx2.stroke();
+                    };
+                };
+
+                var temp_n=1;
+
                 for (var j = 0; j < 101; j++) {
                     var line = linesNumber;
                     while (--line) {
                         for (var i = 0; i < line; i++) {
                             lines[i][j * 2] = (lines[i + 1][j * 2] - lines[i][j * 2]) / 100 * j + lines[i][j * 2];
                             lines[i][j * 2 + 1] = (lines[i + 1][j * 2 + 1] - lines[i][j * 2 + 1]) / 100 * j + lines[i][j * 2 + 1];
-                            ctx2.lineTo(lines[i][j * 2], lines[i][j * 2 + 1]);
-                            ctx2.stroke();
+
+                            setTimeout(aa(i,j),100+temp_n*100);
+                            temp_n++;
+
                         }
                     }
                 }
